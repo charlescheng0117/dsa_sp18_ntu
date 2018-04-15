@@ -476,6 +476,7 @@ string evaluate(Board& b) {
     return result;
 }
 
+int count_who_win = 0;
 
 string whoWin(Board& b, char r) {
     // TODO
@@ -494,6 +495,9 @@ string whoWin(Board& b, char r) {
         return result;
     }
    
+    count_who_win += 1;
+    cout << count_who_win << "\n";
+
     // TODO
     // Test BoardMap.find(b)
     // Test BoardMap.insert
