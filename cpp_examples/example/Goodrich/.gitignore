@@ -1,0 +1,12 @@
+EXTRA*
+PDF*
+Doxy
+*.dSYM
+
+*.pdf
+*.zip
+
+*~
+\#*#
+
+

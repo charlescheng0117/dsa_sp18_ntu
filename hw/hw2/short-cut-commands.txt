@@ -1,0 +1,11 @@
+time ./stdin-hw2 dataset/public_data.txt < openTestInOutFiles/1.in > my1.out && time ./stdin-hw2 dataset/public_data.txt < openTestInOutFiles/2.in > my2.out && time ./stdin-hw2 dataset/public_data.txt < openTestInOutFiles/3.in > my3.out && time ./stdin-hw2 dataset/public_data.txt < openTestInOutFiles/4.in > my4.out
+
+time ./sub-hw2 dataset/public_data.txt < openTestInOutFiles/3.in > my3.out && time ./sub-hw2 dataset/public_data.txt < openTestInOutFiles/1.in > my1.out && time ./sub-hw2 dataset/public_data.txt < openTestInOutFiles/4.in > my4.out && time ./sub-hw2 dataset/public_data.txt < openTestInOutFiles/2.in > my2.out
+
+time ./final dataset/public_data.txt < openTestInOutFiles/1.in > my1.out && time ./final dataset/public_data.txt < openTestInOutFiles/2.in > my2.out && time ./final dataset/public_data.txt < openTestInOutFiles/3.in > my3.out && time ./final dataset/public_data.txt < openTestInOutFiles/4.in > my4.out
+
+
+diff my1.out openTestInOutFiles/1.out && diff my2.out openTestInOutFiles/2.out && diff my3.out openTestInOutFiles/3.out && diff my4.out openTestInOutFiles/4.out
+
+
+time ./prac dataset/public_data.txt < openTestInOutFiles/1.in > prac1.out && time ./prac dataset/public_data.txt < openTestInOutFiles/2.in > prac2.out && time ./prac dataset/public_data.txt < openTestInOutFiles/3.in > prac3.out && time ./prac dataset/public_data.txt < openTestInOutFiles/4.in > prac4.out

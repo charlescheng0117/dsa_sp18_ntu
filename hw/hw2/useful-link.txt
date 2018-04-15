@@ -1,0 +1,2 @@
+- passing text file to standard input:
+    https://stackoverflow.com/questions/25985639/passing-text-file-to-standard-input

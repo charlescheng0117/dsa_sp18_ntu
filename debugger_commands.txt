@@ -1,0 +1,23 @@
+lldb:
+
+- Should compile with the command line args `-g'
+
+# Execute
+    $ lldb ./yourprogram
+    $ lldb ./yourprogram arg1 arg2 ...
+
+# Set breakpoint
+    (lldb) b line_number
+    (lldb) b 19
+
+# Run
+    (lldb) r 	   -> run
+    (lldb) r 18    -> run with command line argument '18' (./yourprogram 18)
+
+# Step
+    (lldb) n       -> next, execute next line
+    (lldb) c       -> continue till the next point
+
+# Examine variable
+    (lldb) fr v    -> print all frame variable
+    (lldb) p var1  -> print out the content of var1
