@@ -18,7 +18,9 @@ int main(int argc, char *argv[]) {
     delete [] M;
 
     // use STL vectors
+    // create
     vector< vector<int> > M(m, vector<int>(n));
+    // delete: do nothing
 
     return 0;
 }
