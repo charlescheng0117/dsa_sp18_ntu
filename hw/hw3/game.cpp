@@ -533,6 +533,10 @@ string whoWin(Board& b, char r) {
       
             if (next_result == "X win") {
                 result = "X win";
+                
+                board_record.insert ( {b, result} );
+                
+                return result;
             } else if (next_result == "Draw" && result == "O win") {
                 result = "Draw";
             }   
@@ -561,6 +565,10 @@ string whoWin(Board& b, char r) {
       
             if (next_result == "O win") {
                 result = "O win";
+
+                board_record.insert ( {b, result} );
+
+                return result;
             } else if (next_result == "Draw" && result == "X win") {
                 result = "Draw";
             }   
