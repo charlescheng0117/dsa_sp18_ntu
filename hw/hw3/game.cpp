@@ -529,8 +529,16 @@ string whoWin(Board& b, char r) {
         //for (next_Board in all possible next move) {// pop Board from stack
         for ( auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
-            next_result = whoWin(next_board, 'O');
-      
+            
+            BoardMap::const_iterator got = board_record.find(next_board);
+            if (got != board_record.end()) {
+                next_result = got->second;
+            } else {
+                next_result = whoWin(next_board, 'O');
+            }
+            
+            //next_result = whoWin(next_board, 'O');
+             
             if (next_result == "X win") {
                 result = "X win";
                 
@@ -542,7 +550,9 @@ string whoWin(Board& b, char r) {
             }   
         }
         // can record the result now
+        
         board_record.insert( {b, result} );
+
         return result;
     } else { // r == 'O'
         // ... likewise
@@ -561,7 +571,15 @@ string whoWin(Board& b, char r) {
         //for (next_Board in all possible next move) {// pop Board from stack
         for ( auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
-            next_result = whoWin(next_board, 'X');
+            
+            BoardMap::const_iterator got = board_record.find(next_board);
+            if (got != board_record.end()) {
+                next_result = got->second;
+            } else {
+                next_result = whoWin(next_board, 'X');
+            }
+            
+            //next_result = whoWin(next_board, 'X');
       
             if (next_result == "O win") {
                 result = "O win";
