@@ -58,7 +58,7 @@ char get_ith_grid(ll state, int ith_grid) {
     return bit_to_move(_bit);
 }
 
-ll get_grid_bit (ll state, int ith_grid) {
+inline ll get_grid_bit (ll state, int ith_grid) {
     // return the 'move' in ith_grid
     // 'O' or 'X' or '.'
     //  11     00     01
@@ -219,7 +219,7 @@ void print_vector(vector<T>& v) {
     cout << "\n"; 
 }
 
-ScorePair calc_row_score(Board& b, int idx_row) {
+inline ScorePair calc_row_score(Board& b, int idx_row) {
     int o_count = 0, x_count = 0;
     ll state = b.state, move;
     int idx_start_grid = N_ROW * idx_row;
@@ -247,7 +247,7 @@ ScorePair calc_row_score(Board& b, int idx_row) {
     //return ScorePair(o_score, x_score);
 }
 
-ScorePair calc_col_score(Board& b, int idx_col) {
+inline ScorePair calc_col_score(Board& b, int idx_col) {
     int o_count = 0, x_count = 0;
     ll state = b.state, move;
     int idx_start_grid = idx_col;
@@ -279,7 +279,7 @@ ScorePair calc_col_score(Board& b, int idx_col) {
     //return ScorePair(o_score, x_score);
 }
 
-ScorePair calc_diagonal_score(Board& b, int idx_dia) {
+inline ScorePair calc_diagonal_score(Board& b, int idx_dia) {
     // 0: upper left to lower right
     // 1: upper right to lower left
  
@@ -333,133 +333,6 @@ ScorePair calc_diagonal_score(Board& b, int idx_dia) {
     }
 
 }
-
-ScorePair calc_row_score(vector< vector<char> >& mat, int idx_row) {
-    int o_count = 0, x_count = 0;
-    char move;
-    for (int i = 0; i < N_COL; ++i) {
-        move = mat[idx_row][i];
-        
-        switch(move) {
-            case 'O': ++o_count; break;
-            case 'X': ++x_count; break;
-            case '.': break;
-        }
-    }
-    
-    //int o_score = 0, x_score = 0;
-                                // Score
-    if (o_count >= 4) {         // O    X
-        return ScorePair(1, 0); // 1    0
-    } else if (x_count >= 4) {
-        return ScorePair(0, 1); // 0    1
-    } else {
-        return ScorePair(0, 0); // 0    0
-    }
-    //return ScorePair(o_score, x_score);
-}
-
-ScorePair calc_col_score(vector< vector<char> >& mat, int idx_col) {
-    int o_count = 0, x_count = 0;
-    char move;
-    for (int i = 0; i < N_ROW; ++i) {
-        move = mat[i][idx_col];
-        
-        switch(move) {
-            case 'O': ++o_count; break;
-            case 'X': ++x_count; break;
-            case '.': break;
-        }
-    }
-
-    //int o_score = 0, x_score = 0;
-                                // Score
-    if (o_count >= 4) {         // O    X
-        return ScorePair(1, 0); // 1    0
-    } else if (x_count >= 4) {
-        return ScorePair(0, 1); // 0    1
-    } else {
-        return ScorePair(0, 0); // 0    0
-    }
-    //    ++x_score;
-
-    //return ScorePair(o_score, x_score);
-}
-
-ScorePair calc_diagonal_score(vector< vector<char> >& mat, int idx_dia) {
-    // 0: upper left to lower right
-    // 1: upper right to lower left
-    
- 
-    int o_count = 0, x_count = 0;
-    char move;
-    
-    if (idx_dia == 0) {
-        // upper right to lower left
-        // indices are:
-        // 0,0           
-        //    1,2      
-        //       2,2
-        //          3,3
-        //             4,4
-        for (int i = 0; i < 5; ++i) {
-            move = mat[i][i];
-        
-            switch(move) {
-                case 'O': ++o_count; break;
-                case 'X': ++x_count; break;
-                case '.': break;
-            }
-        }
-
-    } else { 
-        // upper right to lower left
-        // indices are:
-        //             0,4
-        //          1,3
-        //       2,2
-        //    3,1
-        // 4,0
-        for (int i = 0; i < 5; ++i) {
-            move = mat[i][4 - i];
-        
-            switch(move) {
-                case 'O': ++o_count; break;
-                case 'X': ++x_count; break;
-                case '.': break;
-            }
-        }
-    }
-    
-
-                                // Score
-    if (o_count >= 4) {         // O    X
-        return ScorePair(1, 0); // 1    0
-    } else if (x_count >= 4) {
-        return ScorePair(0, 1); // 0    1
-    } else {
-        return ScorePair(0, 0); // 0    0
-    }
-}
-
-//vector<int> find_blank_grid(vector< vector<char> >& Board_matrix) {
-/*
-vector<int> find_blank_grid(Board& b) {
-
-    CharMatrix Board_matrix = b.in_matrix();
-
-    vector<int> ret;
-    
-    for (int i = 0; i < N_ROW; ++i) {
-        for (int j = 0; j < N_COL; ++j) {
-            if (Board_matrix[i][j] == '.')
-                ret.push_back(i*N_ROW + j);
-        }
-    
-    }
-
-    return ret;
-}*/
 
 vector<int> find_blank_grid(Board& b) {
 
