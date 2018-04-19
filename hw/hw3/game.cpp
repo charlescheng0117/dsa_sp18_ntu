@@ -602,8 +602,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, got->second);
                 
                 if (result == X_WIN) {
-                    //b.alpha = alpha;
-                    //b.beta = beta;
+                    b.alpha = alpha;
+                    b.beta = beta;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -612,17 +612,17 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, whoWin(next_board, alpha, beta, 'O'));
             
                 if (result == X_WIN) {
-                    //b.alpha = alpha;
-                    //b.beta = beta;
+                    b.alpha = alpha;
+                    b.beta = beta;
                     board_record.insert( {b, result} );
                     return result;
                 }
-                alpha = max(alpha, result);
                 
-                if (beta <= alpha)
-                    break; // beta cut-off
             }
             
+            alpha = max(alpha, result);
+            if (beta <= alpha)
+                break; // beta cut-off
             /*
             alpha = max(alpha, result);
             
@@ -644,6 +644,9 @@ int whoWin(Board& b, int alpha, int beta, char r) {
         }
         // can record the result now
         
+        b.alpha = alpha;
+        b.beta = beta;
+
         board_record.insert( {b, result} );
 
         return result;
@@ -678,28 +681,30 @@ int whoWin(Board& b, int alpha, int beta, char r) {
     
                 result = min(result, got->second);
                 if (result == O_WIN) {
+                    b.alpha = alpha;
+                    b.beta = beta;
+                    
+                    board_record.insert( {b, result} );
+
                     return result;
                 }
 
             } else {
                 result = min(result, whoWin(next_board, alpha, beta, 'X'));
                 if (result == O_WIN) {
+                    b.alpha = alpha;
+                    b.beta = beta;
+                    
                     board_record.insert( {b, result} );
                     return result;
                 }
                 
-                beta = min(beta, result);
-                
-                if (beta <= alpha)
-                    break; // alpha cut-off
             }
             
-            /* 
             beta = min(beta, result);
             
             if (beta <= alpha)
                 break; // alpha cut-off
-            */
             //next_result = whoWin(next_board, 'X');
             
             /* 
@@ -714,6 +719,9 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             }*/  
         }
         // can record the result now
+        b.alpha = alpha;
+        b.beta = beta;
+        
         board_record.insert( {b, result} );
         return result;
     }
