@@ -210,9 +210,11 @@ struct BoardHasher {
       // O_score and X_score combine them using XOR
       // and bit shifting:
 
-        return ((hash<ll>()(b.state)
+        return (((((hash<ll>()(b.state)
                ^ (hash<int>()(b.O_score) << 1)) >> 1)
-               ^ (hash<int>()(b.X_score) << 1);
+               ^ (hash<int>()(b.X_score) << 1)  >> 1)
+               ^ (hash<int>()(b.alpha) << 1)) >> 1)
+               ^ (hash<int>()(b.beta) << 1);
         }
 };
 
@@ -946,10 +948,6 @@ int main(int argc, char** argv) {
         //fprintf(stdout, );
     
     }
-
-    #ifdef DEBUG
-    fclose(fp);
-    #endif
 
     return 0;
 }
