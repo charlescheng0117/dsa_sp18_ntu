@@ -28,7 +28,7 @@ def print_board(char_b):
 
 def main():
     if len(sys.argv) != 3:
-        print("usage: python gen_board.py [round] [num_board]")
+        print("usage: python gen_board.py [num_board] [num_round]")
     else:
         num_board = int(sys.argv[1])
         num_round = int(sys.argv[2])
