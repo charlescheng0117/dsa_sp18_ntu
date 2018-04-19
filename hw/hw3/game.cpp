@@ -6,6 +6,11 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
+#include <limits>
+
+/* Ref: http://web.cs.ucla.edu/~rosen/161/notes/alphabeta.html
+ *
+ */
 
 #define O_BIT 3 // 'O' = 11
 #define X_BIT 0 // 'X' = 00
@@ -13,6 +18,13 @@
 #define N_ROW 5
 #define N_COL 5
 #define N_DIA 2 // # of diagonal
+
+// alpha: lower bound, for X
+// beta:  upper bound, for O
+
+#define X_WIN 1
+#define O_WIN -1
+#define DRAW 0
 
 //#define DEBUG 1
 //#define GET_NEXT_BOARD 1
@@ -198,7 +210,8 @@ struct BoardHasher {
         }
 };
 
-typedef unordered_map<Board, string, BoardHasher> BoardMap;
+//typedef unordered_map<Board, string, BoardHasher> BoardMap;
+typedef unordered_map<Board, int, BoardHasher> BoardMap;
 BoardMap board_record;
 
 void print_matrix(vector< vector<char> >& mat) {
@@ -334,7 +347,7 @@ inline ScorePair calc_diagonal_score(Board& b, int idx_dia) {
 
 }
 
-vector<int> find_blank_grid(Board& b) {
+inline vector<int> find_blank_grid(Board& b) {
 
     vector<int> ret;
     ll state = b.state;
@@ -347,7 +360,7 @@ vector<int> find_blank_grid(Board& b) {
     return ret;
 }
 
-vector< MovePair > get_move_combination(vector<int>& idx_blank_grid) {
+inline vector< MovePair > get_move_combination(vector<int>& idx_blank_grid) {
     // return a combination of pairs given all inx of blank_grid.
     vector< MovePair > ret;
     ret.reserve(150);
@@ -364,7 +377,7 @@ vector< MovePair > get_move_combination(vector<int>& idx_blank_grid) {
 }
 
 
-Board get_next_board(Board& b, MovePair& mp, char r) {
+inline Board get_next_board(Board& b, MovePair& mp, char r) {
     // given r = 'o', 'x'
     // return the modified Board mod_b;
     Board mod_b = b;
@@ -407,6 +420,7 @@ Board get_next_board(Board& b, MovePair& mp, char r) {
     return mod_b;
 }
 
+/*
 char get_round(Board& b) {
     int O_count = 0, X_count = 0;
     char move;
@@ -419,12 +433,27 @@ char get_round(Board& b) {
         }
     }
     return (O_count == X_count) ? 'O' : 'X';
-}
+}*/
 
+char get_round(Board& b) {
+    int O_count = 0, X_count = 0;
+    ll move;
+    for (int i = 0; i < 25; ++i) {
+        move = get_grid_bit(b.state, i);
+        switch(move) {
+            case O_BIT: ++O_count; break;
+            case X_BIT: ++X_count; break;
+        }
+    }
+    return (O_count == X_count) ? 'O' : 'X';
+}
 // calculate scores and update b
-string evaluate(Board& b) {
+//string evaluate(Board& b) {
+int evaluate(Board& b) {
     // return the score of b
-    string result = "O win";
+    //string result = "O win";
+    int result = O_WIN;
+    
     int tmp_O_score = 0, tmp_X_score = 0;
     ScorePair tmp_pair;
     //CharMatrix b_mat = b.in_matrix();
@@ -477,11 +506,14 @@ string evaluate(Board& b) {
     b.X_score = tmp_X_score;
 
     if (tmp_O_score > tmp_X_score) {
-        result = "O win";
+        //result = "O win";
+        result = O_WIN;
     } else if (tmp_O_score == tmp_X_score) {
-        result = "Draw";
+        //result = "Draw";
+        result = DRAW;
     } else {
-        result = "X win";
+        //result = "X win";
+        result = X_WIN;
     }
    
      
@@ -494,7 +526,8 @@ string evaluate(Board& b) {
 
 //int count_who_win = 0;
 
-string whoWin(Board& b, char r) {
+int whoWin(Board& b, int alpha, int beta, char r) {
+//string whoWin(Board& b, int alpha=-1, int beta=1, char r) {
     // TODO
     // b: current Board
     // r: current player
@@ -505,31 +538,40 @@ string whoWin(Board& b, char r) {
     // Base case 1: b isEnd
     if (b.isEnd()) {
         // copy b to insert in board_record
+        BoardMap::const_iterator got = board_record.find(b);
+        if (got != board_record.end()) {
+            #ifdef DEBUG
+            printf("Looking up b!\n");
+            #endif
+            return got->second;
+        }
+
         Board insert_b = b;
-        string result = evaluate(b);
+        //string result = evaluate(b);
+        int result = evaluate(b);
         board_record.insert ( {insert_b, result} );
         return result;
     }
    
-    //count_who_win += 1;
-    //cout << count_who_win << "\n";
 
     // TODO
-    // Test BoardMap.find(b)
-    // Test BoardMap.insert
     // Base case 2: we've already evaluated b
+    /*
     BoardMap::const_iterator got = board_record.find(b);
     if (got != board_record.end()) {
         #ifdef DEBUG
         printf("Looking up b!\n");
         #endif
         return got->second;
-    }
+    }*/
     
-    string result, next_result;
-    
+    //string result, next_result;
+    //int result, next_result;
+
+    // TODO
+    // alpha-beta pruning 
     if (r == 'X') {
-        result = "O win";
+        //result = "O win";
                         
         // Get all child grid
         vector<int> blank_grid = find_blank_grid(b);
@@ -541,19 +583,40 @@ string whoWin(Board& b, char r) {
             comb_moves = get_move_combination(blank_grid);
         }
 
-        //for (next_Board in all possible next move) {// pop Board from stack
+        // maxmizing player
+        // int next_result = - numeric_limits<int>::infinity(); 
+        // int next_result = -1;
+        int result = -1;
         for ( auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
             
-            BoardMap::const_iterator got = board_record.find(next_board);
+            //BoardMap::const_iterator got = board_record.find(next_board);
+            BoardMap::const_iterator got = board_record.find(b);
             if (got != board_record.end()) {
-                next_result = got->second;
+                result = max(result, got->second);
+                
+                if (result == X_WIN) {
+                    board_record.insert( {b, result} );
+                    return result;
+                }
+
             } else {
-                next_result = whoWin(next_board, 'O');
-            }
+                result = max(result, whoWin(next_board, alpha, beta, 'O'));
             
+                if (result == X_WIN) {
+                    board_record.insert( {b, result} );
+                    return result;
+                }
+            }
+
+            alpha = max(alpha, result);
+            
+            if (beta <= alpha)
+                break; // beta cut-off
+
             //next_result = whoWin(next_board, 'O');
-             
+            
+            /* no pruning 
             if (next_result == "X win") {
                 result = "X win";
                 
@@ -562,7 +625,7 @@ string whoWin(Board& b, char r) {
                 return result;
             } else if (next_result == "Draw" && result == "O win") {
                 result = "Draw";
-            }   
+            }   */
         }
         // can record the result now
         
@@ -571,7 +634,7 @@ string whoWin(Board& b, char r) {
         return result;
     } else { // r == 'O'
         // ... likewise
-        result = "X win";
+        //result = "X win";
 
         // Get all child grid
         vector<int> blank_grid = find_blank_grid(b);
@@ -583,19 +646,39 @@ string whoWin(Board& b, char r) {
             comb_moves = get_move_combination(blank_grid);
         }
 
+        int result = 1;
         //for (next_Board in all possible next move) {// pop Board from stack
         for ( auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
-            
+            /*
             BoardMap::const_iterator got = board_record.find(next_board);
             if (got != board_record.end()) {
                 next_result = got->second;
             } else {
                 next_result = whoWin(next_board, 'X');
+            }*/
+             
+            BoardMap::const_iterator got = board_record.find(b);
+            if (got != board_record.end()) {
+                result = min(result, got->second);
+            } else {
+                //result = max(result, whoWin(next_board, alpha, beta, 'O'));
+                result = min(result, whoWin(next_board, alpha, beta, 'X'));
             }
             
+            if (result == O_WIN) {
+                board_record.insert( {b, result} );
+                return result;
+            }
+            
+            beta = min(beta, result);
+            
+            if (beta <= alpha)
+                break; // alpha cut-off
+            
             //next_result = whoWin(next_board, 'X');
-      
+            
+            /* 
             if (next_result == "O win") {
                 result = "O win";
 
@@ -604,7 +687,7 @@ string whoWin(Board& b, char r) {
                 return result;
             } else if (next_result == "Draw" && result == "X win") {
                 result = "Draw";
-            }   
+            }*/  
         }
         // can record the result now
         board_record.insert( {b, result} );
@@ -823,8 +906,15 @@ int main(int argc, char** argv) {
     for (int i = 0; i < num_Board; ++i) {
         Board cur_board = input_board[i];
         char r = get_round(cur_board);
-        string result = whoWin(cur_board, r);
-        fprintf(stdout, "%s\n", result.c_str());
+        int result = whoWin(cur_board, -1, 1, r);
+        
+        switch (result) {
+            case O_WIN: fprintf(stdout, "O win\n"); break;
+            case X_WIN: fprintf(stdout, "X win\n"); break;
+            case DRAW: fprintf(stdout, "Draw\n"); break;
+        }
+
+        //fprintf(stdout, "%s\n", result.c_str());
         //fprintf(stdout, );
     
     }
