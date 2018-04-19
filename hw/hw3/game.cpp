@@ -22,9 +22,9 @@
 // alpha: lower bound, for X
 // beta:  upper bound, for O
 
-#define X_WIN 1
-#define O_WIN -1
-#define DRAW 0
+const int X_WIN = 1;
+const int O_WIN = -1;
+const int DRAW  = 0;
 
 //#define DEBUG 1
 //#define GET_NEXT_BOARD 1
@@ -126,6 +126,8 @@ public:
     ll state;
     int O_score;
     int X_score;
+    int alpha;
+    int beta;
 
     Board() {}
 
@@ -133,6 +135,8 @@ public:
         state = s;
         O_score = O_s;
         X_score = X_s;
+        alpha = -1;
+        beta = 1;
     }
    
     char operator[](int i) {
@@ -147,12 +151,14 @@ public:
             state = rhs.state;
             O_score = rhs.O_score;
             X_score = rhs.X_score;
+            alpha = rhs.alpha;
+            beta = rhs.beta;
             return (*this);
         }
     }
 
     bool operator==(const Board& rhs) const {
-        return (rhs.state == state && rhs.O_score == O_score && rhs.X_score == X_score);
+        return (rhs.state == state && rhs.O_score == O_score && rhs.X_score == X_score && rhs.alpha == alpha && rhs.beta == beta);
     }
 
     bool isEnd() {
@@ -587,7 +593,7 @@ int whoWin(Board& b, int alpha, int beta, char r) {
         // int next_result = - numeric_limits<int>::infinity(); 
         // int next_result = -1;
         int result = -1;
-        for ( auto mp : comb_moves) {
+        for (auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
             
             //BoardMap::const_iterator got = board_record.find(next_board);
@@ -596,6 +602,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, got->second);
                 
                 if (result == X_WIN) {
+                    //b.alpha = alpha;
+                    //b.beta = beta;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -604,16 +612,23 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, whoWin(next_board, alpha, beta, 'O'));
             
                 if (result == X_WIN) {
+                    //b.alpha = alpha;
+                    //b.beta = beta;
                     board_record.insert( {b, result} );
                     return result;
                 }
+                alpha = max(alpha, result);
+                
+                if (beta <= alpha)
+                    break; // beta cut-off
             }
-
+            
+            /*
             alpha = max(alpha, result);
             
             if (beta <= alpha)
                 break; // beta cut-off
-
+            */
             //next_result = whoWin(next_board, 'O');
             
             /* no pruning 
@@ -660,22 +675,31 @@ int whoWin(Board& b, int alpha, int beta, char r) {
              
             BoardMap::const_iterator got = board_record.find(b);
             if (got != board_record.end()) {
+    
                 result = min(result, got->second);
+                if (result == O_WIN) {
+                    return result;
+                }
+
             } else {
-                //result = max(result, whoWin(next_board, alpha, beta, 'O'));
                 result = min(result, whoWin(next_board, alpha, beta, 'X'));
+                if (result == O_WIN) {
+                    board_record.insert( {b, result} );
+                    return result;
+                }
+                
+                beta = min(beta, result);
+                
+                if (beta <= alpha)
+                    break; // alpha cut-off
             }
             
-            if (result == O_WIN) {
-                board_record.insert( {b, result} );
-                return result;
-            }
-            
+            /* 
             beta = min(beta, result);
             
             if (beta <= alpha)
                 break; // alpha cut-off
-            
+            */
             //next_result = whoWin(next_board, 'X');
             
             /* 
@@ -694,10 +718,6 @@ int whoWin(Board& b, int alpha, int beta, char r) {
         return result;
     }
 }
-    
-
-
-
 
 int main(int argc, char** argv) {
     int num_Board;
