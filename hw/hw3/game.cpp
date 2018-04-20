@@ -158,7 +158,11 @@ public:
     }
 
     bool operator==(const Board& rhs) const {
-        return (rhs.state == state && rhs.O_score == O_score && rhs.X_score == X_score && rhs.alpha == alpha && rhs.beta == beta);
+        if (rhs.state == state && rhs.O_score == O_score && rhs.X_score == X_score ) {
+            //return (rhs.beta <= rhs.alpha && beta <= alpha) || (rhs.alpha == alpha && rhs.beta == beta);
+            return (rhs.beta <= rhs.alpha && beta <= alpha) || (rhs.alpha <= rhs.beta && alpha <= beta);
+        }
+        return false;
     }
 
     bool isEnd() {
