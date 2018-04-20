@@ -1,7 +1,5 @@
 #include <vector>
 #include <unordered_map>
-#include <stack>
-
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -26,19 +24,12 @@ const int X_WIN = 1;
 const int O_WIN = -1;
 const int DRAW  = 0;
 
-//#define DEBUG 1
-//#define GET_NEXT_BOARD 1
-//#define TEST_NEXT_BOARD 1
-//#define TEST_IS_END 1
-//#define TEST_OPERATOR_EQUAL 1
-//#define TEST_WHO_WIN 1
-//#define SHOW_SCORE 1
 using namespace std;
 
 typedef long long ll;
 typedef vector< vector<char> > CharMatrix;
 // global variable 
-// unordered_map<Board, string> board_record
+// unordered_map<Board, int> board_record
 // defined at line 156 
 
 char bit_to_move(ll bit) {
@@ -222,7 +213,6 @@ struct BoardHasher {
         }
 };
 
-//typedef unordered_map<Board, string, BoardHasher> BoardMap;
 typedef unordered_map<Board, int, BoardHasher> BoardMap;
 BoardMap board_record;
 
@@ -269,7 +259,6 @@ inline ScorePair calc_row_score(Board& b, int idx_row) {
     } else {
         return ScorePair(0, 0); // 0    0
     }
-    //return ScorePair(o_score, x_score);
 }
 
 inline ScorePair calc_col_score(Board& b, int idx_col) {
@@ -290,7 +279,6 @@ inline ScorePair calc_col_score(Board& b, int idx_col) {
         idx_start_grid += N_COL;
     }
 
-    //int o_score = 0, x_score = 0;
                                 // Score
     if (o_count >= 4) {         // O    X
         return ScorePair(1, 0); // 1    0
@@ -299,9 +287,6 @@ inline ScorePair calc_col_score(Board& b, int idx_col) {
     } else {
         return ScorePair(0, 0); // 0    0
     }
-    //    ++x_score;
-
-    //return ScorePair(o_score, x_score);
 }
 
 inline ScorePair calc_diagonal_score(Board& b, int idx_dia) {
@@ -432,20 +417,6 @@ inline Board get_next_board(Board& b, MovePair& mp, char r) {
     return mod_b;
 }
 
-/*
-char get_round(Board& b) {
-    int O_count = 0, X_count = 0;
-    char move;
-    for (int i = 0; i < 25; ++i) {
-        move = get_ith_grid(b.state, i);
-        if (move == 'O') {
-            ++O_count;
-        } else if (move == 'X') {
-            ++X_count;
-        }
-    }
-    return (O_count == X_count) ? 'O' : 'X';
-}*/
 
 char get_round(Board& b) {
     int O_count = 0, X_count = 0;
@@ -460,15 +431,12 @@ char get_round(Board& b) {
     return (O_count == X_count) ? 'O' : 'X';
 }
 // calculate scores and update b
-//string evaluate(Board& b) {
 int evaluate(Board& b) {
     // return the score of b
-    //string result = "O win";
     int result = O_WIN;
     
     int tmp_O_score = 0, tmp_X_score = 0;
     ScorePair tmp_pair;
-    //CharMatrix b_mat = b.in_matrix();
 
 
     // convert to matrix to calculate
@@ -494,21 +462,13 @@ int evaluate(Board& b) {
     //         ++tmp_X_score;
     
     for (int i = 0; i < N_COL; ++i) {
-        //tmp_pair = calc_col_score(b_mat, i);
         tmp_pair = calc_col_score(b, i); 
         tmp_O_score += tmp_pair.O_score;
         tmp_X_score += tmp_pair.X_score;
     }
 
-    // for two diagonal in Board
-    //     if num of 'O' >= 4
-    //         ++tmp_O_score;
-    //
-    //     if num of 'X' >= 4
-    //         ++tmp_X_score;
    
     for (int i = 0; i < N_DIA; ++i) {
-        //tmp_pair = calc_diagonal_score(b_mat, i);
         tmp_pair = calc_diagonal_score(b, i);
         tmp_O_score += tmp_pair.O_score;
         tmp_X_score += tmp_pair.X_score;
@@ -518,36 +478,21 @@ int evaluate(Board& b) {
     b.X_score = tmp_X_score;
 
     if (tmp_O_score > tmp_X_score) {
-        //result = "O win";
         result = O_WIN;
     } else if (tmp_O_score == tmp_X_score) {
-        //result = "Draw";
         result = DRAW;
     } else {
-        //result = "X win";
         result = X_WIN;
     }
    
-     
-    #ifdef SHOW_SCORE
-    printf("tmp_O_score: %d, tmp_X_score: %d\n", tmp_O_score, tmp_X_score);
-    #endif
-
     return result;
 }
 
-//int count_who_win = 0;
 
 int whoWin(Board& b, int alpha, int beta, char r) {
 //string whoWin(Board& b, int alpha=-1, int beta=1, char r) {
-    // TODO
     // b: current Board
     // r: current player
-    //
-    // Should have a map<Board, string> to record the Board we've evaluated.
-    // ex: {Board: "O win"}
-    
-    // Base case 1: b isEnd
     
     b.alpha = alpha;
     b.beta = beta;
@@ -556,9 +501,6 @@ int whoWin(Board& b, int alpha, int beta, char r) {
         // copy b to insert in board_record
         BoardMap::const_iterator got = board_record.find(b);
         if (got != board_record.end()) {
-            #ifdef DEBUG
-            printf("Looking up b!\n");
-            #endif
             return got->second;
         }
 
@@ -570,52 +512,27 @@ int whoWin(Board& b, int alpha, int beta, char r) {
     }
    
 
-    // TODO
-    // Base case 2: we've already evaluated b
-    /*
-    BoardMap::const_iterator got = board_record.find(b);
-    if (got != board_record.end()) {
-        #ifdef DEBUG
-        printf("Looking up b!\n");
-        #endif
-        return got->second;
-    }*/
-    
-    //string result, next_result;
-    //int result, next_result;
-
-    // TODO
-    // cache which alpha-beta to board?
-    //
     // alpha-beta pruning 
     if (r == 'X') {
-        //result = "O win";
                         
         // Get all child grid
         vector<int> blank_grid = find_blank_grid(b);
         vector<MovePair> comb_moves;
         if (blank_grid.size() == 3) { // last round
             comb_moves.push_back(MovePair(-1, -1));
-            //r = 'X';
         } else {
             comb_moves = get_move_combination(blank_grid);
         }
 
-        // maxmizing player
-        // int next_result = - numeric_limits<int>::infinity(); 
-        // int next_result = -1;
         int result = -1;
         for (auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
             
-            //BoardMap::const_iterator got = board_record.find(next_board);
             BoardMap::const_iterator got = board_record.find(next_board);
             if (got != board_record.end()) {
                 result = max(result, got->second);
                 
                 if (result == X_WIN) {
-                    //b.alpha = 1;
-                    //b.beta = 1;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -624,8 +541,6 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, whoWin(next_board, alpha, beta, 'O'));
             
                 if (result == X_WIN) {
-                    //b.alpha = 1;
-                    //b.beta = 1;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -635,66 +550,33 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             alpha = max(alpha, result);
             if (beta <= alpha)
                 break; // beta cut-off
-            /*
-            alpha = max(alpha, result);
-            
-            if (beta <= alpha)
-                break; // beta cut-off
-            */
-            //next_result = whoWin(next_board, 'O');
-            
-            /* no pruning 
-            if (next_result == "X win") {
-                result = "X win";
-                
-                board_record.insert ( {b, result} );
-                
-                return result;
-            } else if (next_result == "Draw" && result == "O win") {
-                result = "Draw";
-            }   */
         }
         // can record the result now
-        
-        //b.alpha = alpha;
-        //b.beta = beta;
 
         board_record.insert( {b, result} );
 
         return result;
     } else { // r == 'O'
         // ... likewise
-        //result = "X win";
 
         // Get all child grid
         vector<int> blank_grid = find_blank_grid(b);
         vector<MovePair> comb_moves;
         if (blank_grid.size() == 3) { // last round
             comb_moves.push_back(MovePair(-1, -1));
-            //r = 'X';
         } else {
             comb_moves = get_move_combination(blank_grid);
         }
 
         int result = 1;
-        //for (next_Board in all possible next move) {// pop Board from stack
         for ( auto mp : comb_moves) {
             Board next_board = get_next_board(b, mp, r);
-            /*
-            BoardMap::const_iterator got = board_record.find(next_board);
-            if (got != board_record.end()) {
-                next_result = got->second;
-            } else {
-                next_result = whoWin(next_board, 'X');
-            }*/
              
             BoardMap::const_iterator got = board_record.find(next_board);
             if (got != board_record.end()) {
     
                 result = min(result, got->second);
                 if (result == O_WIN) {
-                    //b.alpha = -1;
-                    //b.beta = -1;
                     
                     board_record.insert( {b, result} );
 
@@ -704,8 +586,6 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             } else {
                 result = min(result, whoWin(next_board, alpha, beta, 'X'));
                 if (result == O_WIN) {
-                    //b.alpha = -1;
-                    //b.beta = -1;
                     
                     board_record.insert( {b, result} );
                     return result;
@@ -717,22 +597,7 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             
             if (beta <= alpha)
                 break; // alpha cut-off
-            //next_result = whoWin(next_board, 'X');
-            
-            /* 
-            if (next_result == "O win") {
-                result = "O win";
-
-                board_record.insert ( {b, result} );
-
-                return result;
-            } else if (next_result == "Draw" && result == "X win") {
-                result = "Draw";
-            }*/  
         }
-        // can record the result now
-        //b.alpha = alpha;
-        //b.beta = beta;
         
         board_record.insert( {b, result} );
         return result;
@@ -744,31 +609,14 @@ int main(int argc, char** argv) {
     char move1, move2, move3, move4, move5;
     
     // read # of Boards to solve
-    #ifndef DEBUG
     fscanf(stdin, "%d\n", &num_Board);
-    #endif
-
-    #ifdef DEBUG
-    FILE* fp = fopen(argv[1], "r");
-    fscanf(fp, "%d\n", &num_Board);
-    #endif
+    
     vector<Board> input_board(num_Board);
     for (int i = 0; i < num_Board; ++i) {
         ll row_state = 0; // state of current row 
         for (int j = 0; j < N_ROW; ++j) { // 5 row for each grid
-            //while (EOF != fscanf(stdin, "%c%c%c%c%c", &move1, &move2, &move3, &move4, &move5)) {
-            #ifndef DEBUG
+            
             fscanf(stdin, "%c%c%c%c%c\n", &move1, &move2, &move3, &move4, &move5);
-            #endif 
-            
-            #ifdef DEBUG
-            fscanf(fp, "%c%c%c%c%c\n", &move1, &move2, &move3, &move4, &move5);
-            #endif
-
-            #ifdef DEBUG
-            printf("%c%c%c%c%c\n", move1, move2, move3, move4, move5);
-            #endif
-            
             ll tmp_move = (move_to_bit(move1) << 8) +
                           (move_to_bit(move2) << 6) +
                           (move_to_bit(move3) << 4) +
@@ -776,171 +624,13 @@ int main(int argc, char** argv) {
             
             // update row_state
             row_state += tmp_move;
-            #ifdef DEBUG
-            cout << "tmp_move: " << tmp_move << "\n";
-            #endif
             row_state = (row_state << 10);
         }
         ll state = (row_state >> 10); // we move bits too far, have to shift it back;
-        #ifdef DEBUG
-        cout << "state of this Board: " << state << "\n";
-        #endif
         Board cur_Board = Board(state, 0, 0);
         input_board[i] = cur_Board;    
     }
    
-    #ifdef DEBUG    
-    for (int i = 0; i < num_Board; ++i) {   
-        //cout << input_board[i].state << "\n";
-        cout << i << "th Board:\n";
-        input_board[i].print();
-        cout << "who wins?\n";
-        cout << evaluate(input_board[i]) << "\n";
-    }
-    #endif
-        
-    #ifdef DEBUG
-    cout << "Test in_matrix\n";
-    vector< vector<char> > tmp = input_board[0].in_matrix();
-    print_matrix(tmp);
-    #endif
-    
-    #ifdef DEBUG
-    int input_n;
-    printf("Input [0, %d] to find Board's blank gird, or -1 to quit: ", num_Board - 1);
-    while (cin >> input_n) {
-        if (input_n == -1)
-            break;
-
-        Board in_board = input_board[input_n];
-
-        printf("Finding %d th Board's blank grid.\n", input_n);
-        CharMatrix bn_mat = in_board.in_matrix();
-        printf("%d Matrix is:\n", input_n);
-        print_matrix(bn_mat);
-
-        vector<int> blank_grid = find_blank_grid(in_board);
-        print_vector(blank_grid);
-        printf("Input [0, %d] to find Board's blank gird, or -1 to quit: ", num_Board - 1);
-    
-        printf("Generating combination of moves.\n");
-
-        vector<MovePair> comb_moves = get_move_combination(blank_grid);
-        
-        printf("# of blank_grid: %lu, # of comb.: %lu\n", blank_grid.size(), comb_moves.size());
-        for (int i = 0; i < comb_moves.size(); ++i) {
-            comb_moves[i].print();
-        }    
-
-    }
-    #endif
-    
-    #ifdef DEBUG
-    printf("Testing [] operator, -2 to quit. Board is 0th Board:\n");
-    Board in_board = input_board[0];
-    in_board.print();
-
-    while (cin >> input_n) {
-        if (input_n == -2)
-            break;
-        printf("b[%d] = %c, or -2 to quit\n", input_n, in_board[input_n]);
-    }
-    #endif
-
-    #ifdef TEST_OPERATOR_EQUAL
-    printf("Testing = operator, 0th Board is:\n");
-    in_board.print();
-    Board copy = in_board;
-    printf("copy is:\n");
-    copy.print();
-    printf("copy 1 is:\n");
-    copy = input_board[1];
-    copy.print();
-
-    #endif
-
-    #ifdef GET_NEXT_BOARD
-    printf("Test modify Board. Input n to mod Board n: ");
-    cin >> input_n;
-    printf("Modifying b%d.\n", input_n);
-    in_board = input_board[input_n];
-    in_board.print();
-    printf("Available moves:\n");
-    vector<int> blank_grid = find_blank_grid(in_board);
-    vector<MovePair> comb_moves = get_move_combination(blank_grid);
-    for (int i = 0; i < comb_moves.size(); ++i) {
-        comb_moves[i].print();
-    }
-    int in_g1, in_g2;
-    
-    printf("Input grid to modify, or -3 -3 to quit: ");
-    while(cin >> in_g1 >> in_g2) {
-        if (in_g1 == -3 || in_g2 == -3)
-            break;
-        char r = 'O';
-        MovePair mp(in_g1, in_g2);
-        Board nb = get_next_board(in_board, mp, r);
-        
-        printf("Next Board:\n");
-        nb.print();
-
-        printf("Input grid to modify, or -3 to quit: ");
-    }
-    #endif
-
-    #ifdef TEST_NEXT_BOARD
-    whoWin(input_board[0], 'X');
-    #endif
-    
-    #ifdef TEST_IS_END
-    printf("Testing isEnd.\n");
-    Board cur_b = input_board[0];
-    MovePair last_move(-1, -1);
-    Board next_b = get_next_board(cur_b, last_move, 'X');
-    if (next_b.isEnd())
-        printf("Maybe no bug.\n");
-    else
-        printf("Definitely has bug.\n");
-
-    #endif
-
-    #ifdef TEST_NEXT_BOARD
-    // Get all child grid
-    printf("Insert n, r to check all next_board: ");
-    char r;
-    cin >> input_n >> r;
-    cur_b = input_board[input_n];
-    blank_grid = find_blank_grid(cur_b);
-    comb_moves.clear();
-    if (blank_grid.size() == 3) { // last round
-        comb_moves.push_back(MovePair(-1, -1));
-        //r = 'X';
-    } else {
-        comb_moves = get_move_combination(blank_grid);
-    }
-    for (vector<MovePair>::iterator it = comb_moves.begin(); it != comb_moves.end(); ++it) {
-        printf("Original Board:\n");
-        cur_b.print();
-        Board next_Board = get_next_board(cur_b, (*it), r);
-        printf("Modified Board with grid: ");
-        (*it).print();
-        next_Board.print();
-    }
-    #endif
-
-    #ifdef TEST_WHO_WIN
-    printf("Insert n, r to test whoWin, or r = q to quit: ");
-    while (cin >> input_n >> r) {
-        if (r == 'q')
-            break;
-        printf("r = %c, Board %d is:\n", r, input_n);
-        cur_b = input_board[input_n];
-        cur_b.print();
-        string result = whoWin(cur_b, r);
-        printf("Who win? %s\n", result.c_str());
-        printf("Insert n, r to test whoWin, or r = q to quit: ");
-    }
-    #endif
 
     // writing ouput
     for (int i = 0; i < num_Board; ++i) {
@@ -954,8 +644,6 @@ int main(int argc, char** argv) {
             case DRAW: fprintf(stdout, "Draw\n"); break;
         }
 
-        //fprintf(stdout, "%s\n", result.c_str());
-        //fprintf(stdout, );
     
     }
 
