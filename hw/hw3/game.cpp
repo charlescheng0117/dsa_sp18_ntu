@@ -160,7 +160,7 @@ public:
     bool operator==(const Board& rhs) const {
         if (rhs.state == state && rhs.O_score == O_score && rhs.X_score == X_score ) {
             //return (rhs.beta <= rhs.alpha && beta <= alpha) || (rhs.alpha == alpha && rhs.beta == beta);
-            return (rhs.beta <= rhs.alpha && beta <= alpha) || (rhs.alpha <= rhs.beta && alpha <= beta);
+            return (rhs.beta <= rhs.alpha && beta <= alpha) || (rhs.alpha < rhs.beta && alpha < beta);
         }
         return false;
     }
@@ -548,6 +548,10 @@ int whoWin(Board& b, int alpha, int beta, char r) {
     // ex: {Board: "O win"}
     
     // Base case 1: b isEnd
+    
+    b.alpha = alpha;
+    b.beta = beta;
+    
     if (b.isEnd()) {
         // copy b to insert in board_record
         BoardMap::const_iterator got = board_record.find(b);
@@ -581,6 +585,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
     //int result, next_result;
 
     // TODO
+    // cache which alpha-beta to board?
+    //
     // alpha-beta pruning 
     if (r == 'X') {
         //result = "O win";
@@ -603,13 +609,13 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             Board next_board = get_next_board(b, mp, r);
             
             //BoardMap::const_iterator got = board_record.find(next_board);
-            BoardMap::const_iterator got = board_record.find(b);
+            BoardMap::const_iterator got = board_record.find(next_board);
             if (got != board_record.end()) {
                 result = max(result, got->second);
                 
                 if (result == X_WIN) {
-                    b.alpha = alpha;
-                    b.beta = beta;
+                    //b.alpha = 1;
+                    //b.beta = 1;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -618,8 +624,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 result = max(result, whoWin(next_board, alpha, beta, 'O'));
             
                 if (result == X_WIN) {
-                    b.alpha = alpha;
-                    b.beta = beta;
+                    //b.alpha = 1;
+                    //b.beta = 1;
                     board_record.insert( {b, result} );
                     return result;
                 }
@@ -650,8 +656,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
         }
         // can record the result now
         
-        b.alpha = alpha;
-        b.beta = beta;
+        //b.alpha = alpha;
+        //b.beta = beta;
 
         board_record.insert( {b, result} );
 
@@ -682,13 +688,13 @@ int whoWin(Board& b, int alpha, int beta, char r) {
                 next_result = whoWin(next_board, 'X');
             }*/
              
-            BoardMap::const_iterator got = board_record.find(b);
+            BoardMap::const_iterator got = board_record.find(next_board);
             if (got != board_record.end()) {
     
                 result = min(result, got->second);
                 if (result == O_WIN) {
-                    b.alpha = alpha;
-                    b.beta = beta;
+                    //b.alpha = -1;
+                    //b.beta = -1;
                     
                     board_record.insert( {b, result} );
 
@@ -698,8 +704,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             } else {
                 result = min(result, whoWin(next_board, alpha, beta, 'X'));
                 if (result == O_WIN) {
-                    b.alpha = alpha;
-                    b.beta = beta;
+                    //b.alpha = -1;
+                    //b.beta = -1;
                     
                     board_record.insert( {b, result} );
                     return result;
@@ -725,8 +731,8 @@ int whoWin(Board& b, int alpha, int beta, char r) {
             }*/  
         }
         // can record the result now
-        b.alpha = alpha;
-        b.beta = beta;
+        //b.alpha = alpha;
+        //b.beta = beta;
         
         board_record.insert( {b, result} );
         return result;
