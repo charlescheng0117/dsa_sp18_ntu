@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 using namespace std;
 
@@ -29,6 +30,10 @@ int main(int argc, char *argv[]) {
 
     int c = test_scope();
     cout << "after return, c = " << c << "\n";
+
+
+    int min_ele = min(1, -1);
+    cout << min_ele << "\n";
 
     return 0;
 }
