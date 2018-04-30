@@ -1,0 +1,4 @@
+10 10.5
+go CMU
+UCBerkeley
+1000000000
