@@ -1,0 +1,15 @@
+unordered_map
+http://dsa.mirlab.org/cppref/en/cpp/container/unordered_map/find.html
+    
+
+unordered_set:
+http://dsa.mirlab.org/cppref/en/cpp/container/unordered_set.html
+http://dsa.mirlab.org/cppref/en/cpp/container/unordered_set/insert.html
+http://dsa.mirlab.org/cppref/en/cpp/container/unordered_set/find.html
+
+vector:
+http://dsa.mirlab.org/cppref/en/cpp/container/vector.html
+
+algorithm:
+http://dsa.mirlab.org/cppref/en/cpp/algorithm/find_if_not.html
+http://dsa.mirlab.org/cppref/en/cpp/algorithm/upper_bound.html
