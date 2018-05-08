@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
     }
    
     #ifdef DEBUG 
-    for( auto pair : dict ) {
-        printf("%s: %d\n", pair.first.c_str(), pair.second);
-    }
+    //for( auto pair : dict ) {
+    //    printf("%s: %d\n", pair.first.c_str(), pair.second);
+    //}
     #endif
 
     int id;
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
         
 
         #ifdef DEBUG
-        printf("%d %s\n", id, Ti);
+        printf("id = %d, Ti = %s\n", id, Ti);
         #endif
         switch (id) {
             case 1: //init_str.append(string(Ti[0]));
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
             case 2: //init_str.push_back(Ti[0]);
                     init_str += Ti[0];
                     //print(init_str);
-                    hash_front(dict, init_str);
+                    hash_end(dict, init_str);
                     break;
              
             case 3: printf("%d\n", dict[string(Ti)]);
