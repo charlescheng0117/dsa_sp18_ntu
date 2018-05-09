@@ -1,5 +1,5 @@
 #include <iostream>
-#include <deque>
+#include <vector>
 #include <deque>
 #include <string>
 #include <cmath>
@@ -11,7 +11,7 @@ using namespace std;
 //#define BASIC_STR 1
 
 #define BUFFSIZE 100000
-#define x 29
+#define x 29L
 #define highest_power 100000
 #define M 1000000007
 
@@ -19,7 +19,7 @@ typedef long long int lli;
 typedef deque<lli> my_hasher;
 
 // global variable
-deque<lli> x_power;
+vector<lli> x_power(highest_power);
 
 // map to store hash value
 unordered_map<string, lli> str_hash_map;
@@ -65,6 +65,34 @@ lli hash_value(int l, int r, my_hasher& _hash) {
     return ( _hash[r] - (_hash[l - 1] * x_power[r - l + 1]) % M + M) % M;
 }
 
+int count_substring(my_hasher& _hash, string& str_Ti) {
+
+    lli hash_value_Ti;
+    if ( (it = str_hash_map.find(str_Ti)) == str_hash_map.end() )
+        hash_value_Ti = hash_Ti(str_Ti);
+    else
+        hash_value_Ti = it->second;
+    
+    int len_str = _hash.size() - 1;
+    int len_Ti = str_Ti.length();
+    int end = len_str - len_Ti + 1;
+    int count = 0;
+    #ifdef DEBUG
+    printf("init_str: %s\n", init_str.c_str());
+    printf("hash value of Ti: %lli\n", hash_value_Ti);
+    #endif
+    for (int i = 1; i <= end; ++i) {
+        #ifdef DEBUG
+        string sub = init_str.substr(i - 1, len_Ti);
+        lli tmp = hash_value(i, i + len_Ti - 1, _hash);
+        printf("substr: %s, hash value: %lli\n", sub.c_str(), tmp);
+        #endif
+        if (hash_value(i, i + len_Ti - 1, _hash) == hash_value_Ti)
+           ++count;
+    } 
+    return count;
+}
+
 int count_substring(string& init_str, string& str_Ti) {
     
     my_hasher _hash = my_hash(init_str);
@@ -97,6 +125,27 @@ int count_substring(string& init_str, string& str_Ti) {
 
 }
 
+void update_front(my_hasher& _hash, char c) {
+    // update our _hash after insert c at front
+    int size = _hash.size();
+    
+    // every element in _hash should multiply by x
+    for (int i = 1; i < size; ++i) {
+         _hash[i] = x * _hash[i] % M;
+    }
+
+    lli hash_c = (c - 'a' + 1);
+    _hash.push_front(hash_c);
+    
+    return; 
+}
+
+void update_end(my_hasher& _hash, char c) {
+    // update our _hash after insert c at end
+    lli hash_c = ( _hash.back() * x + (c - 'a' + 1) ) % M;
+    _hash.push_back(hash_c);
+}
+
 void print_line(string& msg) {
     printf("----------%s----------\n", msg.c_str());
 }
@@ -107,6 +156,18 @@ void print_end() {
 
 void print(string& s) {
     printf("%s\n", s.c_str());
+}
+
+template <typename T>
+void print(vector<T> v) {
+    // length = 100
+    //int len = 10000;
+    for (int i = 0; i < v.size(); ++i) {
+    //for (int i = 0; i < len; ++i)
+        cout << i << ": " << v[i] << "\n";
+    }
+
+    cout << "\n";
 }
 
 template <typename T>
@@ -121,6 +182,7 @@ void print(deque<T> v) {
     cout << "\n";
 }
 
+
 int main(int argc, char *argv[])
 {
     #ifdef DEBUG
@@ -128,16 +190,12 @@ int main(int argc, char *argv[])
     #endif
 
     // 29 ^ N, if N > 13 => overflow
-    x_power.push_back(1); // 29 ^ 0
+    x_power[0] = 0; // 29 ^ 0
     lli tmp = 1;
     for (int i = 1; i <= highest_power; ++i) {
         tmp = x * tmp % M;
-        x_power.push_back(tmp);
+        x_power[i] = tmp;
     }
-    
-    #ifdef DEBUG
-    print(x_power);
-    #endif
 
     char S[BUFFSIZE]; // S, initial string
 
@@ -166,15 +224,18 @@ int main(int argc, char *argv[])
         printf("id = %d, Ti = %s\n", id, Ti);
         #endif
         switch (id) {
-            case 1: //init_str.append(string(Ti[0]));
-                    init_str = Ti[0] + init_str;
+            case 1: update_front(_hash, Ti[0]);
+                    //init_str = Ti[0] + init_str;
+                    
 
                     //print(init_str);
                     //hash_front(dict, init_str);
                     break;
 
-            case 2: //init_str.push_back(Ti[0]);
-                    init_str += Ti[0];
+            case 2: update_end(_hash, Ti[0]);
+                    //init_str += Ti[0];
+                    
+                    
                     //print(init_str);
                     //hash_end(dict, init_str);
                     break;
