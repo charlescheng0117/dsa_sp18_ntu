@@ -11,7 +11,7 @@ using namespace std;
 //#define BASIC_STR 1
 
 #define BUFFSIZE 100000
-#define x 29L
+#define x 29
 #define highest_power 100000
 #define M 1000000007
 
@@ -41,6 +41,27 @@ my_hasher my_hash(string& s) {
         // hash[i] = (hash[i - 1] * x + (S[i] - 'a' + 1) )%M;
        
         _hash[i] = (_hash[i - 1] * x + (s[i - 1] - 'a' + 1) ) % M;
+    }
+
+    return _hash;
+}
+
+my_hasher my_hash(deque<char>& dq_s) {
+    /* return a my_hasher that preprocess s for string matching. */
+    int size = dq_s.size();
+
+    // we want hash[0], hash[1], ..., hash[len]
+    //            0   ,   s[0] , ...,  s[len - 1]
+    my_hasher _hash(size + 1);
+    // hash[0] = 0
+    _hash[0] = 0;
+
+    for (int i = 1; i <= size; ++i) {
+        // TA gives: 
+        // S's index: 1, ..., N
+        // hash[i] = (hash[i - 1] * x + (S[i] - 'a' + 1) )%M;
+       
+        _hash[i] = (_hash[i - 1] * x + (dq_s[i - 1] - 'a' + 1) ) % M;
     }
 
     return _hash;
@@ -127,15 +148,25 @@ int count_substring(string& init_str, string& str_Ti) {
 
 void update_front(my_hasher& _hash, char c) {
     // update our _hash after insert c at front
+    
+    // first insert 0 at _hash[0], update _hash[1] as hash_c
+    lli hash_c = (c - 'a' + 1);
+    _hash.push_front(0);
+    _hash[1] = hash_c;
+    
     int size = _hash.size();
     
-    // every element in _hash should multiply by x
-    for (int i = 1; i < size; ++i) {
-         _hash[i] = x * _hash[i] % M;
-    }
+    int prev_tmp, cur_tmp; // to remember the previous, current hash value
+    prev_tmp = _hash[0]; // restore _hash[2] for later use
+    cur_tmp = _hash[2];
+    _hash[2] = (_hash[1] * x + cur_tmp);
+    prev_tmp = cur_tmp;
 
-    lli hash_c = (c - 'a' + 1);
-    _hash.push_front(hash_c);
+    for (int i = 3; i < size; ++i) {
+        cur_tmp = _hash[i];
+        _hash[i] = (_hash[i - 1] * x + cur_tmp - x * prev_tmp) % M;
+        prev_tmp = cur_tmp;
+    }
     
     return; 
 }
@@ -205,10 +236,13 @@ int main(int argc, char *argv[])
     printf("input: %s, len = %lu\n", S, strlen(S));
     #endif
 
+    //deque<char> init_dq (S, S + sizeof(S)/sizeof(char));
     string init_str = string(S);
+    deque<char> init_dq(init_str.begin(), init_str.end());
     
     // initialize our hasher
-    my_hasher _hash = my_hash(init_str);
+    //my_hasher _hash = my_hash(init_str);
+    
 
     int Q; // Q questions
     fscanf(stdin, "%d", &Q);
@@ -241,7 +275,7 @@ int main(int argc, char *argv[])
                     break;
              
             case 3: string str_Ti = string(Ti);
-                    int count = count_substring(init_str, str_Ti);
+                    int count = count_substring(_hash, str_Ti);
                     #ifdef DEBUG
                     printf("Ti is: %s\n", string(Ti).c_str());
                     printf("count is: %d\n", count);
