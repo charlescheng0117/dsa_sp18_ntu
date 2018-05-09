@@ -1,5 +1,6 @@
 #include <iostream>
-#include <vector>
+#include <deque>
+#include <deque>
 #include <string>
 #include <cmath>
 #include <unordered_map>
@@ -15,10 +16,10 @@ using namespace std;
 #define M 1000000007
 
 typedef long long int lli;
-typedef vector<lli> my_hasher;
+typedef deque<lli> my_hasher;
 
 // global variable
-vector<lli> x_power;
+deque<lli> x_power;
 
 // map to store hash value
 unordered_map<string, lli> str_hash_map;
@@ -109,7 +110,7 @@ void print(string& s) {
 }
 
 template <typename T>
-void print(vector<T> v) {
+void print(deque<T> v) {
     // length = 100
     //int len = 10000;
     for (int i = 0; i < v.size(); ++i) {
@@ -148,16 +149,8 @@ int main(int argc, char *argv[])
 
     string init_str = string(S);
     
-    #ifdef BASIC_STR
-    printf("string = %s\n", init_str.c_str());
-    printf("add CMU at the end = %s\n", init_str.append("CMU").c_str());
-    printf("add UCBerkeley at the front = %s\n", init_str.insert(0, "UCBerkeley").c_str());
-    #endif
-
-    
-    // map to store hash value
-    unordered_map<string, lli> hash_map;
-    unordered_map<string, lli>::iterator it;
+    // initialize our hasher
+    my_hasher _hash = my_hash(init_str);
 
     int Q; // Q questions
     fscanf(stdin, "%d", &Q);
@@ -175,6 +168,7 @@ int main(int argc, char *argv[])
         switch (id) {
             case 1: //init_str.append(string(Ti[0]));
                     init_str = Ti[0] + init_str;
+
                     //print(init_str);
                     //hash_front(dict, init_str);
                     break;
