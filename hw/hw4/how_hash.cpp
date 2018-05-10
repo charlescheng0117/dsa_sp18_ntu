@@ -7,7 +7,7 @@
 
 using namespace std;
 
-//#define DEBUG 1
+#define DEBUG 1
 //#define BASIC_STR 1
 
 #define BUFFSIZE 100000
@@ -82,6 +82,7 @@ lli hash_Ti(string &Ti) {
 }
 
 lli hash_value(int l, int r, my_hasher& _hash) {
+    // return the hash value of S[l, r], inclusive
     //return ( _hash[r] - _hash[l - 1] * (x_power[r - l + 1]  % M ) + M) % M;
     return ( _hash[r] - (_hash[l - 1] * x_power[r - l + 1]) % M + M) % M;
 }
@@ -98,16 +99,16 @@ int count_substring(my_hasher& _hash, string& str_Ti) {
     int len_Ti = str_Ti.length();
     int end = len_str - len_Ti + 1;
     int count = 0;
-    #ifdef DEBUG
-    printf("init_str: %s\n", init_str.c_str());
-    printf("hash value of Ti: %lli\n", hash_value_Ti);
-    #endif
+
+    //#ifdef DEBUG
+    printf("str_Ti = %s, hash_value_Ti = %lli\n", str_Ti.c_str(), hash_value_Ti);
+    //#endif 
     for (int i = 1; i <= end; ++i) {
-        #ifdef DEBUG
-        string sub = init_str.substr(i - 1, len_Ti);
+        //#ifdef DEBUG
+        //string sub = init_str.substr(i - 1, len_Ti);
         lli tmp = hash_value(i, i + len_Ti - 1, _hash);
-        printf("substr: %s, hash value: %lli\n", sub.c_str(), tmp);
-        #endif
+        printf("i = %d, hash value: %lli\n", i, tmp);
+        //#endif
         if (hash_value(i, i + len_Ti - 1, _hash) == hash_value_Ti)
            ++count;
     } 
@@ -146,27 +147,20 @@ int count_substring(string& init_str, string& str_Ti) {
 
 }
 
-void update_front(my_hasher& _hash, char c) {
+void update_front(my_hasher& _hash, deque<char> dq_str) {
     // update our _hash after insert c at front
     
     // first insert 0 at _hash[0], update _hash[1] as hash_c
-    lli hash_c = (c - 'a' + 1);
+    
+    _hash = my_hash(dq_str);
+    /*
     _hash.push_front(0);
-    _hash[1] = hash_c;
     
     int size = _hash.size();
-    
-    int prev_tmp, cur_tmp; // to remember the previous, current hash value
-    prev_tmp = _hash[0]; // restore _hash[2] for later use
-    cur_tmp = _hash[2];
-    _hash[2] = (_hash[1] * x + cur_tmp);
-    prev_tmp = cur_tmp;
 
-    for (int i = 3; i < size; ++i) {
-        cur_tmp = _hash[i];
-        _hash[i] = (_hash[i - 1] * x + cur_tmp - x * prev_tmp) % M;
-        prev_tmp = cur_tmp;
-    }
+    for (int i = 1; i < size; ++i) {
+        _hash[i] = (_hash[i - 1] * x + (dq_str[i - 1] - 'a' + 1) ) % M;
+    }*/
     
     return; 
 }
@@ -187,6 +181,17 @@ void print_end() {
 
 void print(string& s) {
     printf("%s\n", s.c_str());
+}
+
+void print_deque(deque<char>& dq_str) {
+    for (int i = 0; i < dq_str.size(); ++i)
+        printf("%c", dq_str[i]);
+    printf("\n");
+
+    for (int i = 0; i < dq_str.size(); ++i)
+        printf("%d", i);
+
+    printf("\n");
 }
 
 template <typename T>
@@ -216,10 +221,6 @@ void print(deque<T> v) {
 
 int main(int argc, char *argv[])
 {
-    #ifdef DEBUG
-    string msg;
-    #endif
-
     // 29 ^ N, if N > 13 => overflow
     x_power[0] = 0; // 29 ^ 0
     lli tmp = 1;
@@ -227,6 +228,64 @@ int main(int argc, char *argv[])
         tmp = x * tmp % M;
         x_power[i] = tmp;
     }
+
+
+    #ifdef DEBUG
+    string msg;
+    #endif
+
+    #ifdef DEBUG
+    string test, sub_test;
+    printf("input your string: ");
+    cin >> test;
+    printf("input your sub_test: ");
+    cin >> sub_test;
+    
+    deque<char> dq_test(test.begin(), test.end());
+    my_hasher test_hash = my_hash(dq_test);
+    print_deque(dq_test);
+    print(test_hash);
+    
+    int tmp_op;
+    char tmp_c;
+
+    while(true) {
+        int i, test_len;
+        printf("input i, test_len of your substring of test: ");
+        cin >> i >> test_len;
+        string tmp = test.substr(i, test_len);
+
+        printf("i = %d, test_len = %d\n", i, test_len);
+        printf("your substring: %s\n", tmp.c_str());
+        printf("your substring's hash value: %lli\n", hash_value(i + 1, i + 1 + test_len - 1, test_hash));
+        printf("sub_test's hash value: %lli\n", hash_Ti(sub_test));
+
+        printf("input your operation(1 c, 2, c), (0, _) to test current string, or (3, _) to quit: ");
+        cin >> tmp_op >> tmp_c;
+        
+        if (tmp_op == 0) {
+            ;
+        } else if (tmp_op == 1) {
+            dq_test.push_front(tmp_c);
+            printf("string becomes:\n");
+            print_deque(dq_test);
+            test_hash = my_hash(dq_test);
+
+        } else if (tmp_op == 2) {
+            dq_test.push_back(tmp_c);
+            printf("string becomes:\n");
+            print_deque(dq_test);
+            test_hash = my_hash(dq_test);
+        }
+        test = string(dq_test.begin(), dq_test.end());
+
+        if (tmp_op == 3)
+            break;
+         
+    }
+    #endif
+    if (tmp_op == 3)
+        return 0;
 
     char S[BUFFSIZE]; // S, initial string
 
@@ -238,11 +297,18 @@ int main(int argc, char *argv[])
 
     //deque<char> init_dq (S, S + sizeof(S)/sizeof(char));
     string init_str = string(S);
-    deque<char> init_dq(init_str.begin(), init_str.end());
+    deque<char> dq_str(init_str.begin(), init_str.end());
     
     // initialize our hasher
     //my_hasher _hash = my_hash(init_str);
+    bool update_flag = false;
+    my_hasher _hash = my_hash(dq_str);
     
+    #ifdef DEBUG
+    printf("initial string: %s\ninitial _hash:\n", S);
+    print(_hash);
+    #endif
+
 
     int Q; // Q questions
     fscanf(stdin, "%d", &Q);
@@ -258,7 +324,9 @@ int main(int argc, char *argv[])
         printf("id = %d, Ti = %s\n", id, Ti);
         #endif
         switch (id) {
-            case 1: update_front(_hash, Ti[0]);
+            case 1: update_flag = true;
+                    dq_str.push_front(Ti[0]);
+                 
                     //init_str = Ti[0] + init_str;
                     
 
@@ -266,7 +334,14 @@ int main(int argc, char *argv[])
                     //hash_front(dict, init_str);
                     break;
 
-            case 2: update_end(_hash, Ti[0]);
+            case 2: dq_str.push_back(Ti[0]);
+                    update_end(_hash, Ti[0]); // no need to reconstruct _hash
+                    #ifdef DEBUG
+                    printf("current string: ");
+                    print_deque(dq_str);
+                    printf("current hash: \n");
+                    print(_hash);
+                    #endif
                     //init_str += Ti[0];
                     
                     
@@ -275,6 +350,17 @@ int main(int argc, char *argv[])
                     break;
              
             case 3: string str_Ti = string(Ti);
+                   
+                    if (update_flag) {
+                        update_front(_hash, dq_str); // need to reconstruct _hash
+                        update_flag = false;
+                        #ifdef DEBUG
+                        printf("current string: ");
+                        print_deque(dq_str);
+                        printf("current hash: \n");
+                        print(_hash);
+                        #endif 
+                    }
                     int count = count_substring(_hash, str_Ti);
                     #ifdef DEBUG
                     printf("Ti is: %s\n", string(Ti).c_str());
