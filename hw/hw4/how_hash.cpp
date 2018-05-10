@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define DEBUG 1
+//#define DEBUG 1
 //#define BASIC_STR 1
 
 #define BUFFSIZE 100000
@@ -100,15 +100,15 @@ int count_substring(my_hasher& _hash, string& str_Ti) {
     int end = len_str - len_Ti + 1;
     int count = 0;
 
-    //#ifdef DEBUG
+    #ifdef DEBUG
     printf("str_Ti = %s, hash_value_Ti = %lli\n", str_Ti.c_str(), hash_value_Ti);
-    //#endif 
+    #endif 
     for (int i = 1; i <= end; ++i) {
-        //#ifdef DEBUG
+        #ifdef DEBUG
         //string sub = init_str.substr(i - 1, len_Ti);
         lli tmp = hash_value(i, i + len_Ti - 1, _hash);
         printf("i = %d, hash value: %lli\n", i, tmp);
-        //#endif
+        #endif
         if (hash_value(i, i + len_Ti - 1, _hash) == hash_value_Ti)
            ++count;
     } 
@@ -145,6 +145,36 @@ int count_substring(string& init_str, string& str_Ti) {
     } 
     return count;
 
+}
+
+// has bug
+void update_front(my_hasher& _hash, char c) {
+    // update our _hash after insert c at front
+    
+    // first insert 0 at _hash[0], update _hash[1] as hash_c
+   
+    _hash.push_front(0);
+
+    lli _hash1 = (c - 'a' + 1);
+
+    _hash[1] = _hash1;
+    int size = _hash.size();
+
+    for (int i = 2; i < size; ++i) {
+        _hash[i] = (_hash[i] + x_power[i - 1] * _hash1 % M ) % M;
+    }
+
+
+    /*
+    _hash.push_front(0);
+    
+    int size = _hash.size();
+
+    for (int i = 1; i < size; ++i) {
+        _hash[i] = (_hash[i - 1] * x + (dq_str[i - 1] - 'a' + 1) ) % M;
+    }*/
+    
+    return; 
 }
 
 void update_front(my_hasher& _hash, deque<char> dq_str) {
@@ -283,9 +313,9 @@ int main(int argc, char *argv[])
             break;
          
     }
-    #endif
     if (tmp_op == 3)
         return 0;
+    #endif
 
     char S[BUFFSIZE]; // S, initial string
 
@@ -297,10 +327,12 @@ int main(int argc, char *argv[])
 
     //deque<char> init_dq (S, S + sizeof(S)/sizeof(char));
     string init_str = string(S);
+
+    vector< deque<char> > all_string;
     deque<char> dq_str(init_str.begin(), init_str.end());
     
     // initialize our hasher
-    //my_hasher _hash = my_hash(init_str);
+    // my_hasher _hash = my_hash(init_str);
     bool update_flag = false;
     my_hasher _hash = my_hash(dq_str);
     
@@ -325,16 +357,16 @@ int main(int argc, char *argv[])
         #endif
         switch (id) {
             case 1: update_flag = true;
-                    dq_str.push_front(Ti[0]);
-                 
-                    //init_str = Ti[0] + init_str;
-                    
+                    //dq_str.push_front(Ti[0]);
+                    update_front(_hash, Ti[0]);
 
+                    //init_str = Ti[0] + init_str;
                     //print(init_str);
                     //hash_front(dict, init_str);
                     break;
 
-            case 2: dq_str.push_back(Ti[0]);
+            case 2: update_flag = true;
+                    //dq_str.push_back(Ti[0]);
                     update_end(_hash, Ti[0]); // no need to reconstruct _hash
                     #ifdef DEBUG
                     printf("current string: ");
@@ -351,6 +383,7 @@ int main(int argc, char *argv[])
              
             case 3: string str_Ti = string(Ti);
                    
+                    
                     if (update_flag) {
                         update_front(_hash, dq_str); // need to reconstruct _hash
                         update_flag = false;
