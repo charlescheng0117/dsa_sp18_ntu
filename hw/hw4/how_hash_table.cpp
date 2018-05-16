@@ -63,7 +63,6 @@ lli hash_value(int l, int r, my_hasher& _hash) {
     return ( _hash[r] - (_hash[l - 1] * x_power[r - l + 1]) % M + M) % M;
 }
 
-
 void print(string& s) {
     printf("%s\n", s.c_str());
 }
@@ -163,20 +162,15 @@ void update_insert_end(my_hasher& hasher_end_t4, deque<char>& dq_str) {
     
 }
 
-void update_end(my_hasher& _hash, char c) {
-    // update our _hash after insert c at end
-
-    lli hash_c = ( _hash.back() * x + (c - 'a' + 1) ) % M;
-    _hash.push_back(hash_c);
-}
-
 int count_substring(my_hasher& hasher_t3, string& str_Ti) {
 
-    lli hash_value_Ti;
-    if ( (it = str_hash_map.find(str_Ti)) == str_hash_map.end() )
+    lli hash_value_Ti = hash_Ti(str_Ti);
+    if ( (it = str_hash_map.find(str_Ti)) == str_hash_map.end() ) {
         hash_value_Ti = hash_Ti(str_Ti);
-    else
+        str_hash_map[str_Ti] = hash_value_Ti;
+    } else {
         hash_value_Ti = it->second;
+    }
     
     int len_str = hasher_t3.size() - 1;
     int len_Ti = str_Ti.length();
