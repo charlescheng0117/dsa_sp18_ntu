@@ -18,12 +18,19 @@ using namespace std;
 typedef long long int lli;
 typedef deque<lli> my_hasher;
 
+
+
 // global variable
 vector<lli> x_power(highest_power);
 
 // map to store hash value
 unordered_map<string, lli> str_hash_map;
 unordered_map<string, lli>::iterator it;
+
+// map hash value to count
+unordered_map<lli, int> hash_to_count;
+
+
 
 my_hasher my_hash(string& s) {
     /* return a my_hasher that preprocess s for string matching. */
@@ -60,7 +67,7 @@ my_hasher my_hash(deque<char>& dq_s) {
         // TA gives: 
         // S's index: 1, ..., N
         // hash[i] = (hash[i - 1] * x + (S[i] - 'a' + 1) )%M;
-       
+        
         _hash[i] = (_hash[i - 1] * x + (dq_s[i - 1] - 'a' + 1) ) % M;
     }
 
@@ -146,6 +153,7 @@ int count_substring(string& init_str, string& str_Ti) {
     return count;
 
 }
+
 
 // has bug
 void update_front(my_hasher& _hash, char c) {
@@ -330,7 +338,11 @@ int main(int argc, char *argv[])
 
     vector< deque<char> > all_string;
     deque<char> dq_str(init_str.begin(), init_str.end());
+    deque<int> dq_ascii;
     
+    //hash_all(dq_str);
+    
+
     // initialize our hasher
     // my_hasher _hash = my_hash(init_str);
     bool update_flag = false;

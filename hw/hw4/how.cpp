@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
      
     // hash all strings into dict
     int str_len = init_str.length();
+    /*
     for (int len = 1; len <= str_len; ++len) {
         for (int pos = 0; pos <= str_len - len; ++pos) {
             string sub = init_str.substr(pos, len);
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
             #endif
             ++dict[init_str.substr(pos, len)];
         }
-    }
+    }*/
    
     #ifdef DEBUG 
     //for( auto pair : dict ) {
@@ -139,17 +140,35 @@ int main(int argc, char *argv[])
             case 1: //init_str.append(string(Ti[0]));
                     init_str = Ti[0] + init_str;
                     //print(init_str);
-                    hash_front(dict, init_str);
+                    //hash_front(dict, init_str);
                     break;
 
             case 2: //init_str.push_back(Ti[0]);
                     init_str += Ti[0];
                     //print(init_str);
-                    hash_end(dict, init_str);
+                    //hash_end(dict, init_str);
                     break;
              
-            case 3: printf("%d\n", dict[string(Ti)]);
-                            
+            case 3: int count = 0;
+                    string str_Ti = string(Ti);
+                    int len_Ti = str_Ti.length();
+                    int len_init_str = init_str.length();
+                    #ifdef DEBUG
+                    printf("init_str = %s\n", init_str.c_str());
+                    #endif
+
+                    for (int pos = 0; pos <= len_init_str - len_Ti; ++pos) {
+                        string sub = init_str.substr(pos, len_Ti);
+                        #ifdef DEBUG
+                        printf("sub = %s\n", sub.c_str());
+                        #endif
+                        //++dict[sub];
+                        if (sub == str_Ti)
+                            ++count;
+                    }
+            //case 3: printf("%d\n", dict[string(Ti)]);
+                    //printf("%d\n", dict[string(Ti)]);              
+                    printf("%d\n", count);              
                     break;             
         
         
