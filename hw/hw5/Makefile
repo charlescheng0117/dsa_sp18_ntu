@@ -1,8 +1,14 @@
-dp: dp.o
+fries: fries.o
 	g++ -o $@ $^ -std=c++11
 
-dp.o: dp.cpp
-	g++ -c dp.cpp -std=c++11
+fries.o: fries.cpp
+	g++ -c fries.cpp -std=c++11
+
+bird: bird.o
+	g++ -o $@ $^ -std=c++11
+
+bird.o: bird.cpp
+	g++ -c bird.cpp -std=c++11
 
 clean:
 	rm *.o 

@@ -27,7 +27,8 @@ int main(int argc, char *argv[]) {
     
     printf("%d\n", n);
     print(fries);
-
+    
+    printf("%d\n", '0');
 
     return 0;
 }
