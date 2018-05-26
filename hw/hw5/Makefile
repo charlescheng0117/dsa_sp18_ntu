@@ -1,3 +1,5 @@
+all: fries bird
+
 fries: fries.o
 	g++ -o $@ $^ -std=c++11
 
