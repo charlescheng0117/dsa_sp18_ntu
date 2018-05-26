@@ -43,9 +43,17 @@ bool operator< (coef l, coef r) {
     return make_pair(l.a, l.b) < make_pair(r.a, r.b);
 }
 
+int ith_pig(int num_pigs, int i) {
+    // return the integer representing the ith pig
+    // e.g: num_pigs = 5, i = 2
+    // then ith_pig is:
+    //      0 1 2 3 4
+    //      0 0 1 0 0
+    return (1 << (num_pigs - i - 1)); 
+}
 
 int is_pig(int num_pigs, int pig_set, int i) {
-    return ((pig_set >> (num_pigs - i + 1)) & 1) == PIG;
+    return ((pig_set >> (num_pigs - i - 1)) & 1) == PIG;
 }
 
 void show_pigs(int num_pigs, int pig_set) {
@@ -122,20 +130,20 @@ void compute_all_parabola(vector<point>& pigs, map<coef, int>& map_pig) {
 
                     // first we should add pigs[i], pigs[j] to the pig_set, because they must
                     // be on that parabola
-                    pig_set += (1 << (num_pigs - i + 1)); 
-                    pig_set += (1 << (num_pigs - j + 1));
+                    pig_set += (1 << (num_pigs - i - 1)); 
+                    pig_set += (1 << (num_pigs - j - 1));
 
 
                     for (int k = 0; k < num_pigs; ++k) { // iterate all pigs to record 
                         if (k != i && k != j) {
                             if (is_on_parabola(cf, pigs[k])) {
-                                pig_set += (1 << (num_pigs - k + 1));
+                                pig_set += (1 << (num_pigs - k - 1));
                             }
                         }
                     
                     }
                     map_pig[cf] = pig_set;
-                    printf("y = %f x^2 + %f x has pigs: %d\n", cf.a, cf.b, pig_set);
+                    printf("y = %f x^2 + %f x has pigs: ", cf.a, cf.b);
                     show_pigs(num_pigs, pig_set);
                 } else {
                     printf("current point: [%d, %d], [%d, %d] can't form a parabola with a < 0.\n", pigs[i].x, pigs[i].y, pigs[j].x, pigs[j].y);
@@ -172,6 +180,7 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
         //     11011
         //     -----
         //     11011
+        
         printf("parabola is: ");
         it->first.print();
         int pig_left = pig_set & (~ it->second);
@@ -232,7 +241,9 @@ int main(int argc, char *argv[]) {
         
         // set pig_set = 111111111, n 1's
         // so we want 000000111111, n 1's
-        int pig_set = ~ (~0 << n);
+        printf("showing initial %d pigs: \n", n);
+        int pig_set = (1 << n) - 1;
+        show_pigs(n, pig_set);
         compute_all_parabola(pigs, map_pig);
         int total_shots = dp(pigs, pig_set, map_pig);
         printf("%d\n", total_shots);
