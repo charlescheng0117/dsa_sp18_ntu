@@ -10,7 +10,7 @@ bird: bird.o
 	g++ -o $@ $^ -std=c++11
 
 bird.o: bird.cpp
-	g++ -c bird.cpp -std=c++11
+	g++ -g -c bird.cpp -std=c++11
 
 clean:
 	rm *.o 

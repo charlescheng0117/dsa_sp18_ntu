@@ -98,10 +98,12 @@ bool is_on_parabola(coef& cf, point& p) {
     //return (abs(x * (cf.a * x + cf.b) - p.y) <= epsilon);
     bool res = (abs(x * (cf.a * x + cf.b) - p.y) <= epsilon); // compare 2 double
 
+    #ifdef DEBUG
     if (res)
         printf("[%d, %d] is on     y = %fx^2 + %fx \n", p.x, p.y, cf.a, cf.b);
     else
         printf("[%d, %d] is not on y = %fx^2 + %fx \n", p.x, p.y, cf.a, cf.b);
+    #endif
     
     return res; 
 }
@@ -114,15 +116,20 @@ void compute_all_parabola(vector<point>& pigs, map<coef, int>& map_pig) {
 
     for (int i = 0; i < num_pigs; ++i) {
         for (int j = 0; j < i; ++j) {
+            #ifdef DEBUG
             printf("current point: %d: [%d, %d], %d: [%d, %d]\n", i, pigs[i].x, pigs[i].y, j, pigs[j].x, pigs[j].y);
-            
+            #endif    
+        
+
             coef cf = compute_coef(pigs[i], pigs[j]);
             it = map_pig.find(cf);
 
             if (it != map_pig.end()) {
-                printf("found curve: y = %f x^2 + %f x, pigs are: ", it->first.a, it->first.b);
                 int pig_set = it->second;
+                #ifdef DEBUG
+                printf("found curve: y = %f x^2 + %f x, pigs are: ", it->first.a, it->first.b);
                 show_pigs(num_pigs, pig_set);
+                #endif
             }  else { 
 
                 if (cf.a < 0) {
@@ -143,10 +150,15 @@ void compute_all_parabola(vector<point>& pigs, map<coef, int>& map_pig) {
                     
                     }
                     map_pig[cf] = pig_set;
+                    #ifdef DEBUG
                     printf("y = %f x^2 + %f x has pigs: ", cf.a, cf.b);
                     show_pigs(num_pigs, pig_set);
+                    #endif
                 } else {
+                    #ifdef DEBUG
                     printf("current point: [%d, %d], [%d, %d] can't form a parabola with a < 0.\n", pigs[i].x, pigs[i].y, pigs[j].x, pigs[j].y);
+                    #endif
+                    ;
                 }
              }
         }
@@ -180,12 +192,16 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
         //     11011
         //     -----
         //     11011
+       
         
+        int pig_left = pig_set & (~ it->second);
+        #ifdef DEBUG
         printf("parabola is: ");
         it->first.print();
-        int pig_left = pig_set & (~ it->second);
+
         printf("pigs remained: ");
         show_pigs(pigs.size(), pig_left);
+        #endif
         
         // proceed only if pig_set has changed
         if (pig_left != pig_set) {
@@ -220,12 +236,6 @@ int main(int argc, char *argv[]) {
     int T; // number of test cases
     fscanf(stdin, "%d", &T);
 
-    int m = 1;
-
-    m = (m << 1);
-    cout << m << "\n";
-
-
     for (int i = 0; i < T; ++i) {
         int n; // number of pigs 
         fscanf(stdin, "%d", &n);
@@ -240,18 +250,20 @@ int main(int argc, char *argv[]) {
             pigs[j] = point(x, y);
         }
         
-        print(pigs); 
-        // test
         
+
         // set pig_set = 111111111, n 1's
         // so we want 000000111111, n 1's
-        printf("showing initial %d pigs: \n", n);
         int pig_set = (1 << n) - 1;
+        #ifdef DEBUG
+        print(pigs); 
+        printf("showing initial %d pigs: \n", n);
         show_pigs(n, pig_set);
+        #endif
         compute_all_parabola(pigs, map_pig);
         int total_shots = dp(pigs, pig_set, map_pig);
         printf("%d\n", total_shots);
-        printf("--------------------\n");
+        //printf("--------------------\n");
     }
     
 
