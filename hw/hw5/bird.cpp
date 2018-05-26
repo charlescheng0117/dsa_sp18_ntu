@@ -186,10 +186,14 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
         int pig_left = pig_set & (~ it->second);
         printf("pigs remained: ");
         show_pigs(pigs.size(), pig_left);
-        // find min (dp[S / A])
-        tmp = dp(pigs, pig_left, map_pig);
-        if (tmp < min_total) {
-            min_total = tmp;
+        
+        // proceed only if pig_set has changed
+        if (pig_left != pig_set) {
+            // find min (dp[S / A])
+            tmp = dp(pigs, pig_left, map_pig);
+            if (tmp < min_total) {
+                min_total = tmp;
+            }
         }
     }
 
