@@ -221,7 +221,7 @@ void compute_all_parabola(vector<point>& pigs, map<coef, int>& map_pig, unordere
 }
 
 // TODO
-int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
+int dp(map<int, int>& ans, vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
     if (pig_set == 0) {
         return 0;
     }
@@ -230,6 +230,9 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
         return 1;
     }
     
+    // TODO use another map record the results of dp
+    // map<int, int> map_dp;  {first: second} = {pig_set: num_shots}
+
     // dp[S] = min (dp[S / A]) + 1, for all A where A = pigs on a certain parabola
     // S = pig_set = 11111...1111, initially
     // iterate through the parabola
@@ -238,6 +241,7 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
     int tmp;
     //for (auto& cf_pigset : map_pig) {
     map<coef, int>::iterator map_pig_end = map_pig.end();
+    map<int, int>::iterator ans_it;
     for (map<coef, int>::iterator it = map_pig.begin(); it != map_pig_end; ++it) {
         // pig_left is S XOR with the pigs on the parabola
         // TODO implement S / A
@@ -264,13 +268,20 @@ int dp(vector<point>& pigs, int pig_set, map<coef, int>& map_pig) {
         // proceed only if pig_set has changed
         if (pig_left != pig_set) {
             // find min (dp[S / A])
-            tmp = dp(pigs, pig_left, map_pig);
+            
+            if ( (ans_it =  ans.find(pig_left)) != ans.end() ) {
+                tmp = ans_it->second;
+            } else {
+                tmp = dp(ans, pigs, pig_left, map_pig);
+            }
+
             if (tmp < min_total) {
                 min_total = tmp;
             }
         }
     }
-
+    
+    ans[pig_set] = min_total + 1;
     return min_total + 1;
 }
 
@@ -293,6 +304,7 @@ int main(int argc, char *argv[]) {
     
     int T; // number of test cases
     fscanf(stdin, "%d", &T);
+
 
     for (int i = 0; i < T; ++i) {
         int n; // number of pigs 
@@ -336,8 +348,8 @@ int main(int argc, char *argv[]) {
         show_pigs(n, pig_set_not_single);
         #endif
 
-
-        int total_shots = dp(pigs, pig_set_not_single, map_pig) + num_single;
+        map<int, int> ans;
+        int total_shots = dp(ans, pigs, pig_set_not_single, map_pig) + num_single;
         printf("%d\n", total_shots);
     }
     
