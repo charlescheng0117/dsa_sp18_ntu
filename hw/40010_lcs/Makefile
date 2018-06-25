@@ -1,2 +1,2 @@
-all: enemy
-	g++ enemy.cpp -o enemy -std=c++11
+all: lcs
+	g++ lcs.cpp -o lcs -std=c++11
