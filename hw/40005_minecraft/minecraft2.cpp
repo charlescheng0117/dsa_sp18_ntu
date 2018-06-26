@@ -17,10 +17,9 @@ struct set_hasher
 {
   std::size_t operator()(const multiset<int>& ms) const
   {
-      int ret = ms.size();
+      int ret = (0 << 1);
       for (int i : ms) {
         ret ^= (i << 1);
-        ret = ret << 1;
       }
       return ret;
   }
@@ -34,20 +33,20 @@ void print(const multiset<int>& s) {
     printf("}");
     //printf("\n");
 }
-/*
+
 void print( unordered_map< multiset<int>, int >& my_unordered_map ) {
     //for (auto& x : my_unordered_map) {
     printf("unordered_map has: ");
-    for (auto it = my_unordered_map.begin(); it != my_unordered_map.end(); ++it) {
+    for (unordered_map< multiset<int>, int>::iterator it = my_unordered_map.begin(); it != my_unordered_map.end(); ++it) {
         printf("unordered_map[");
         print(it->first);
         printf("] = %d; ", it->second);
         //printf("%d\n", it->second);
     }
     printf("\n");
-}*/
+}
 
-int visit(multiset<int>& state, int len, int N, int M, int K, multiset<int>& now, unordered_map<multiset<int>, int, set_hasher>& dis, queue< multiset<int> >& q) {
+int visit(multiset<int>& state, int len, int N, int M, int K, multiset<int>& now, unordered_map<multiset<int>, int>& dis, queue< multiset<int> >& q) {
 
     //printf("K = %d, N + M - sum(now) = %d + %d - %d = %d\n", K, N, M, accumulate(now.begin(), now.end(), 0),
     //                                        N + M - accumulate(now.begin(), now.end(), 0));
@@ -64,7 +63,7 @@ int visit(multiset<int>& state, int len, int N, int M, int K, multiset<int>& now
     return NOT_FOUND;
 }
 
-int insert_visit(multiset<int>& state, int num, int len, int N, int M, int K, multiset<int>& now, unordered_map<multiset<int>, int, set_hasher>& dis, queue< multiset<int> >& q) {
+int insert_visit(multiset<int>& state, int num, int len, int N, int M, int K, multiset<int>& now, unordered_map<multiset<int>, int>& dis, queue< multiset<int> >& q) {
 
     state.insert(num);
     int result = visit(state, len, N, M, K, now, dis, q);
