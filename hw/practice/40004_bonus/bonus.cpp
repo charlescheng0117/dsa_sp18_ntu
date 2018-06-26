@@ -22,8 +22,8 @@ int main(int argc, char *argv[]) {
 
     //printf("%s\n%s\n", a, b);
 
-    vector< vector< vector<long long int> > > dp (2, vector< vector<long long int> >(M + 1, vector<long long int>(K + 1, 0) ));
-    vector< vector< vector<long long int> > > dp2 (2, vector< vector<long long int> >(M + 1, vector<long long int>(K + 1, 0) ));
+    vector< vector< vector<long long> > > dp (2, vector< vector<long long> >(M + 1, vector<long long>(K + 1, 0) ));
+    vector< vector< vector<long long> > > dp2 (2, vector< vector<long long> >(M + 1, vector<long long>(K + 1, 0) ));
 
 
     /*
@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
             if (a[ti - 1] == b[j - 1]) {
                 for (int k = 1; k <= K; ++k) {
                     dp2[i][j][k] = max(dp2[i^1][j - 1][k], dp[i^1][j-1][k-1]) + 2*(a[ti-1] == 'a');
+                    dp[i][j][k] = max(dp[i][j-1][k], dp[i^1][j][k]);
                     dp[i][j][k] = max(dp[i][j][k], dp2[i][j][k]);
                 }
             } else {
