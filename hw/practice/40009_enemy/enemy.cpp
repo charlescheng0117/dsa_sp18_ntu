@@ -111,7 +111,6 @@ int main(int argc, char** argv) {
                     ans = len;
                 }
             }
-        
         }
         
         printf("%lld\n", ans - dis1[B]);

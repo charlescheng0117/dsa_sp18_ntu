@@ -15,15 +15,15 @@ using namespace std;
 
 struct set_hasher
 {
-  std::size_t operator()(const multiset<int>& ms) const
-  {
-      int ret = ms.size();
-      for (int i : ms) {
-        ret ^= (i << 1);
-        ret = ret << 1;
-      }
-      return ret;
-  }
+    std::size_t operator()(const multiset<int>& ms) const
+    {
+        int ret = ms.size();
+        for (int i : ms) {
+            ret ^= (i << 1);
+            ret = ret << 1;
+        }
+        return ret;
+    }
 };
 
 void print(const multiset<int>& s) {
