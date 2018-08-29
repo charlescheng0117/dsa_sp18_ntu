@@ -1,2 +1,4 @@
-To record the work of DSA at NTU in Spring 2018
+Data Structures and Algorithms, NTU, Spring 2018
 ===
+
+Link: http://mirlab.org/jang/courses/dsa/index.asp  
